@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alfred-letterboxd"
+dynamic = ["version"]
+description = "Letterboxd search tool for Alfred"
+authors = [
+    {name = "Jon Parise", email = "jon@indelible.org"}
+]
+readme = "README.md"
+license = "MIT"
+keywords = ["alfred", "letterboxd"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+]
+requires-python = ">=3.9"
+
+[project.urls]
+Homepage = "https://github.com/jparise/alfred-letterboxd"
+Issues = "https://github.com/jparise/alfred-letterboxd/issues"
+
+[dependency-groups]
+dev = [
+    "pytest==8.4.2",
+    "pytest-cov==7.0.0",
+    "ruff==0.14.0",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "lbsearch.__version__"}
+
+[tool.coverage.run]
+branch = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "RUF", "W"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --strict-markers --cov=lbsearch --cov-report=term-missing"
