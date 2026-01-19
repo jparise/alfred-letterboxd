@@ -1,0 +1,6 @@
+lbsearch
+lbsearch-amd64
+lbsearch-arm64
+*.alfredworkflow
+dist/
+cache/
