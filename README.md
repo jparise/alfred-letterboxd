@@ -30,16 +30,25 @@ lbp steven spielberg
 
 Press **Enter** to open the result in your browser.
 
+## Requirements
+
+**Runtime:**
+- Python 3.9+ (included with macOS Monterey and later)
+
+**Checking your Python version:**
+```sh
+python3 --version  # Should show 3.9 or higher
+```
+
 ## Development
 
 ### Building
 
 ```sh
-make build          # Build binary
 make workflow       # Build Alfred workflow
 make install        # Build and install in Alfred
-make test           # Run tests
-make lint           # Run linter
+make test           # Run pytest tests and integration tests
+make lint           # Lint code with ruff
 ```
 
 ## License

@@ -1,5 +1,11 @@
+# Python
+__pycache__/
+*.egg-info/
+*.py[cod]
+.coverage
+.pytest_cache/
+.ruff_cache/
+
+# Alfred workflow
+letterboxd.alfredworkflow
 lbsearch
-lbsearch-amd64
-lbsearch-arm64
-*.alfredworkflow
-dist/
