@@ -4,6 +4,7 @@ import sys
 import time
 from datetime import timedelta
 from pathlib import Path
+from unittest.mock import Mock
 
 # Import the module under test
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -81,7 +82,7 @@ class TestFilmParser:
                  data-item-name="The Matrix (1999)"
                  data-item-link="/film/the-matrix/">
             </div>
-            <a href="/director/wachowskis/">Wachowskis</a>
+            <a href="/director/wachowskis/" class="text-slug">Wachowskis</a>
         </li>
         """
         parser = lbsearch.LetterboxdFilmParser()
@@ -160,3 +161,20 @@ def test_alfred_output(capsys):
     data = json.loads(captured.out)
     assert "items" in data
     assert len(data["items"]) == 1
+
+
+def test_search_parsing_error(capsys):
+    """Test that parsing errors are reported to the user"""
+    client = Mock()
+    client.search.return_value = "<html>invalid</html>"
+
+    parser = Mock()
+    parser.feed.side_effect = Exception("HTML parsing failed")
+
+    lbsearch.search(client, "films", "http://test/{}/", "query", parser)
+
+    captured = capsys.readouterr()
+    data = json.loads(captured.out)
+    assert len(data["items"]) == 1
+    assert data["items"][0]["title"] == "Error"
+    assert "Failed to parse search results" in data["items"][0]["subtitle"]

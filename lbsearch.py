@@ -334,7 +334,12 @@ def search(
             return
 
     html = client.search(url_pattern, query)
-    parser.feed(html)
+
+    try:
+        parser.feed(html)
+    except Exception as e:
+        alfred_error(f"Failed to parse search results: {e}")
+        return
 
     items = [f.as_item() for f in parser.results[:limit]]
     if not items:
