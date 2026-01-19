@@ -5,12 +5,11 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/jparise/alfred-letterboxd/cache"
 )
 
 // SearchFilms searches Letterboxd for films matching the query.
 // If cache is provided, results will be cached. Pass nil to disable caching.
-func SearchFilms(c *cache.Cache, query string, limit int) ([]Film, error) {
+func SearchFilms(c *Cache, query string, limit int) ([]Film, error) {
 	cacheKey := fmt.Sprintf("films:%s:%d", query, limit)
 	if c != nil {
 		var films []Film

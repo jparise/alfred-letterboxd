@@ -5,12 +5,11 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/jparise/alfred-letterboxd/cache"
 )
 
 // SearchPeople searches Letterboxd for actors, directors, and other film industry people.
 // If cache is provided, results will be cached. Pass nil to disable caching.
-func SearchPeople(c *cache.Cache, query string, limit int) ([]Person, error) {
+func SearchPeople(c *Cache, query string, limit int) ([]Person, error) {
 	cacheKey := fmt.Sprintf("people:%s:%d", query, limit)
 	if c != nil {
 		var people []Person

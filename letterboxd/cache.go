@@ -1,5 +1,4 @@
-// Package cache provides disk-based caching with TTL support for search results.
-package cache
+package letterboxd
 
 import (
 	"crypto/md5"
@@ -21,9 +20,9 @@ type cacheEntry struct {
 	ExpiresAt time.Time       `json:"expires_at"`
 }
 
-// New creates a new cache instance. Uses Alfred's cache directory if available
+// NewCache creates a new cache instance. Uses Alfred's cache directory if available
 // and falls back to a system temporary directory.
-func New(ttl time.Duration) (*Cache, error) {
+func NewCache(ttl time.Duration) (*Cache, error) {
 	cacheDir := os.Getenv("alfred_workflow_cache")
 	if cacheDir == "" {
 		cacheDir = filepath.Join(os.TempDir(), "alfred-letterboxd-cache")
