@@ -30,6 +30,9 @@ jobs:
         run: |
           ruff check --output-format=github
           ruff format --diff
+      - name: Types
+        run: |
+          ty check --output-format=github
 
   test:
     runs-on: ubuntu-latest

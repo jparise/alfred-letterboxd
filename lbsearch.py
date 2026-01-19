@@ -8,11 +8,12 @@ import os
 import tempfile
 import urllib.parse
 import urllib.request
+from abc import abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import NamedTuple, Optional, Protocol, Type, TypedDict, Union
+from typing import NamedTuple, Optional, Protocol, Sequence, Type, TypedDict, Union
 
 __version__ = "0.0.0"
 
@@ -31,61 +32,64 @@ class AlfredItem(TypedDict, total=False):
     icon: AlfredIcon
 
 
-class AsItem(Protocol):
-    def as_item(self) -> AlfredItem: ...
+class AsAlfredItem(Protocol):
+    def as_alfred_item(self) -> AlfredItem: ...
 
 
 @dataclass
-class Film(AsItem):
+class Film(AsAlfredItem):
     title: str
     year: str
     director: str
     url: str
     letterboxd_id: str
 
-    def as_item(self) -> AlfredItem:
+    def as_alfred_item(self) -> AlfredItem:
         title = f"{self.title} ({self.year})" if self.year else self.title
         subtitle = f"Director: {self.director}" if self.director else ""
 
-        return {
-            "uid": f"letterboxd-film-{self.letterboxd_id}",
-            "title": title,
-            "subtitle": subtitle,
-            "arg": self.url,
-            "autocomplete": self.title,
-            "icon": {"path": "icon.png"},
-            "valid": True,
-        }
+        return AlfredItem(
+            uid=f"letterboxd-film-{self.letterboxd_id}",
+            title=title,
+            subtitle=subtitle,
+            arg=self.url,
+            autocomplete=self.title,
+            icon=AlfredIcon(path="icon.png"),
+            valid=True,
+        )
 
 
 @dataclass
-class Person(AsItem):
+class Person(AsAlfredItem):
     name: str
     role: str
     known_for: list[str]
     url: str
 
-    def as_item(self) -> AlfredItem:
+    def as_alfred_item(self) -> AlfredItem:
         parts = []
         if self.role:
             parts.append(self.role.title())
         if self.known_for:
             parts.append(", ".join(self.known_for))
 
-        return {
-            "uid": f"letterboxd-person-{self.name}",
-            "title": self.name,
-            "subtitle": " • ".join(parts),
-            "arg": self.url,
-            "autocomplete": self.name,
-            "icon": {"path": "icon.png"},
-            "valid": True,
-        }
+        return AlfredItem(
+            uid=f"letterboxd-person-{self.name}",
+            title=self.name,
+            subtitle=" • ".join(parts),
+            arg=self.url,
+            autocomplete=self.name,
+            icon=AlfredIcon(path="icon.png"),
+            valid=True,
+        )
 
 
 class LetterboxdParser(HTMLParser):
     @property
-    def results(self) -> list[AsItem]: ...
+    @abstractmethod
+    def results(self) -> Sequence[AsAlfredItem]:
+        """Return parsed results"""
+        ...
 
 
 class LetterboxdFilmParser(LetterboxdParser):
@@ -111,18 +115,18 @@ class LetterboxdFilmParser(LetterboxdParser):
         attrs_dict = dict(attrs)
 
         # Check if we're entering a search result
-        if tag == "li" and "search-result" in attrs_dict.get("class", ""):
+        if tag == "li" and "search-result" in (attrs_dict.get("class") or ""):
             self.in_result = True
             self.current_film = Film(title="", year="", director="", url="", letterboxd_id="")
             self.directors = []
 
         # Extract film data from react component
-        if self.in_result and tag == "div" and "react-component" in attrs_dict.get("class", ""):
-            slug = attrs_dict.get("data-item-slug", "")
-            name = attrs_dict.get("data-item-name", "")
-            link = attrs_dict.get("data-item-link", f"/film/{slug}/")
+        if self.in_result and tag == "div" and "react-component" in (attrs_dict.get("class") or ""):
+            slug = attrs_dict.get("data-item-slug") or ""
+            name = attrs_dict.get("data-item-name") or ""
+            link = attrs_dict.get("data-item-link") or f"/film/{slug}/"
 
-            if slug:
+            if slug and self.current_film:
                 self.current_film.letterboxd_id = slug
                 self.current_film.url = f"https://letterboxd.com{link}"
 
@@ -136,8 +140,8 @@ class LetterboxdFilmParser(LetterboxdParser):
 
         # Track director links - look for text-slug class
         if self.in_result and tag == "a":
-            href = attrs_dict.get("href", "")
-            classes = attrs_dict.get("class", "")
+            href = attrs_dict.get("href") or ""
+            classes = attrs_dict.get("class") or ""
             if "/director/" in href and "text-slug" in classes:
                 self.in_director_link = True
 
@@ -182,9 +186,9 @@ class LetterboxdPeopleParser(LetterboxdParser):
         attrs_dict = dict(attrs)
 
         # Check if we're entering a search result - extract role from class
-        if tag == "li" and "search-result" in attrs_dict.get("class", ""):
+        if tag == "li" and "search-result" in (attrs_dict.get("class") or ""):
             self.in_result = True
-            classes = attrs_dict.get("class", "")
+            classes = attrs_dict.get("class") or ""
             # Extract role from class like "-actor", "-director"
             role = ""
             if "-actor" in classes:
@@ -199,10 +203,10 @@ class LetterboxdPeopleParser(LetterboxdParser):
 
         # Track name link in h2
         if self.in_result and tag == "a":
-            href = attrs_dict.get("href", "")
-            classes = attrs_dict.get("class", "")
+            href = attrs_dict.get("href") or ""
+            classes = attrs_dict.get("class") or ""
             # First link in h2 is the person's name
-            if href and not self.current_person.url:
+            if href and self.current_person and not self.current_person.url:
                 self.in_name_link = True
                 self.current_person.url = f"https://letterboxd.com{href}"
             # Film links have text-slug class
@@ -341,7 +345,7 @@ def search(
         alfred_error(f"Failed to parse search results: {e}")
         return
 
-    items = [f.as_item() for f in parser.results[:limit]]
+    items = [f.as_alfred_item() for f in parser.results[:limit]]
     if not items:
         alfred_message("No results found", f'No {typ} results for "{query}"')
         return

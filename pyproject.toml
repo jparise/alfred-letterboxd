@@ -28,6 +28,7 @@ dev = [
     "pytest==8.4.2",
     "pytest-cov==7.0.0",
     "ruff==0.14.0",
+    "ty==0.0.12",
 ]
 
 [tool.setuptools.dynamic]
@@ -38,7 +39,6 @@ branch = true
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "RUF", "W"]

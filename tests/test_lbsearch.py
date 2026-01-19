@@ -9,33 +9,34 @@ from unittest.mock import Mock
 # Import the module under test
 sys.path.insert(0, str(Path(__file__).parent.parent))
 import lbsearch
+from lbsearch import AlfredItem, Cache, Film, LetterboxdFilmParser, LetterboxdPeopleParser, Person
 
 
 class TestCache:
     def test_init(self, tmp_path):
         """Test cache directory is created"""
-        cache = lbsearch.Cache(timedelta(minutes=15), path=tmp_path)
+        cache = Cache(timedelta(minutes=15), path=tmp_path)
         assert cache.dir.exists()
         assert cache.dir.stat().st_mode & 0o777 == 0o700
 
     def test_cache_miss(self, tmp_path):
         """Test cache miss returns None"""
-        cache = lbsearch.Cache(timedelta(minutes=15), path=tmp_path)
+        cache = Cache(timedelta(minutes=15), path=tmp_path)
         result = cache.get("nonexistent")
         assert result is None
 
     def test_cache_hit(self, tmp_path):
         """Test cache hit returns stored value"""
-        cache = lbsearch.Cache(timedelta(minutes=15), path=tmp_path)
-        items = [{"title": "Test", "subtitle": "test", "valid": True}]
+        cache = Cache(timedelta(minutes=15), path=tmp_path)
+        items = [AlfredItem(title="Test", subtitle="test", valid=True)]
         cache.set("key", items)
         result = cache.get("key")
         assert result == items
 
     def test_cache_expiration(self, tmp_path):
         """Test expired cache entries are removed"""
-        cache = lbsearch.Cache(timedelta(seconds=1), path=tmp_path)
-        items = [{"title": "Test", "subtitle": "test", "valid": True}]
+        cache = Cache(timedelta(seconds=1), path=tmp_path)
+        items = [AlfredItem(title="Test", subtitle="test", valid=True)]
         cache.set("key", items)
 
         # Artificially age the file to make it expired
@@ -49,8 +50,8 @@ class TestCache:
     def test_prune(self, tmp_path):
         """Test prune removes expired entries"""
         # Create cache with 1 second TTL
-        cache = lbsearch.Cache(timedelta(seconds=1), path=tmp_path)
-        items = [{"title": "Test", "subtitle": "test", "valid": True}]
+        cache = Cache(timedelta(seconds=1), path=tmp_path)
+        items = [AlfredItem(title="Test", subtitle="test", valid=True)]
         cache.set("key", items)
 
         # Verify file exists
@@ -85,7 +86,7 @@ class TestFilmParser:
             <a href="/director/wachowskis/" class="text-slug">Wachowskis</a>
         </li>
         """
-        parser = lbsearch.LetterboxdFilmParser()
+        parser = LetterboxdFilmParser()
         parser.feed(html)
 
         assert len(parser.films) == 1
@@ -109,7 +110,7 @@ class TestPeopleParser:
             </p>
         </li>
         """
-        parser = lbsearch.LetterboxdPeopleParser()
+        parser = LetterboxdPeopleParser()
         parser.feed(html)
 
         assert len(parser.people) == 1
@@ -120,41 +121,41 @@ class TestPeopleParser:
         assert "The Matrix" in person.known_for
 
 
-def test_film_as_item():
-    film = lbsearch.Film(
+def test_film_as_alfred_item():
+    film = Film(
         title="The Matrix",
         year="1999",
         director="Wachowskis",
         url="https://letterboxd.com/film/the-matrix/",
         letterboxd_id="the-matrix",
     )
-    item = film.as_item()
+    item = film.as_alfred_item()
 
-    assert item["uid"] == "letterboxd-film-the-matrix"
-    assert item["title"] == "The Matrix (1999)"
-    assert item["subtitle"] == "Director: Wachowskis"
-    assert item["arg"] == "https://letterboxd.com/film/the-matrix/"
-    assert item["valid"] is True
+    assert item.get("uid") == "letterboxd-film-the-matrix"
+    assert item.get("title") == "The Matrix (1999)"
+    assert item.get("subtitle") == "Director: Wachowskis"
+    assert item.get("arg") == "https://letterboxd.com/film/the-matrix/"
+    assert item.get("valid") is True
 
 
-def test_person_as_item():
-    person = lbsearch.Person(
+def test_person_as_alfred_item():
+    person = Person(
         name="Keanu Reeves",
         role="actor",
         known_for=["The Matrix", "John Wick"],
         url="https://letterboxd.com/actor/keanu-reeves/",
     )
-    item = person.as_item()
+    item = person.as_alfred_item()
 
-    assert item["uid"] == "letterboxd-person-Keanu Reeves"
-    assert item["title"] == "Keanu Reeves"
-    assert "Actor" in item["subtitle"]
-    assert "The Matrix" in item["subtitle"]
-    assert item["valid"] is True
+    assert item.get("uid") == "letterboxd-person-Keanu Reeves"
+    assert item.get("title") == "Keanu Reeves"
+    assert "Actor" in (item.get("subtitle") or "")
+    assert "The Matrix" in (item.get("subtitle") or "")
+    assert item.get("valid") is True
 
 
 def test_alfred_output(capsys):
-    items = [{"title": "Test", "valid": True}]
+    items = [AlfredItem(title="Test", valid=True)]
     lbsearch.alfred_output(items)
 
     captured = capsys.readouterr()
