@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/jparise/alfred-letterboxd/alfred"
-	"github.com/jparise/alfred-letterboxd/cache"
 	"github.com/jparise/alfred-letterboxd/letterboxd"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -76,7 +75,7 @@ func main() {
 	}
 
 	// Initialize cache with 15 minute TTL
-	c, err := cache.New(15 * time.Minute)
+	c, err := letterboxd.NewCache(15 * time.Minute)
 	if err != nil {
 		// If cache initialization fails, continue without it
 		c = nil
@@ -94,7 +93,7 @@ func main() {
 	}
 }
 
-func searchFilms(c *cache.Cache, query string) {
+func searchFilms(c *letterboxd.Cache, query string) {
 	films, err := letterboxd.SearchFilms(c, query, 10)
 	if err != nil {
 		alfred.OutputErrorf("Failed to search films: %v", err)
@@ -109,7 +108,7 @@ func searchFilms(c *cache.Cache, query string) {
 	alfred.OutputItems(films, formatFilm)
 }
 
-func searchPeople(c *cache.Cache, query string) {
+func searchPeople(c *letterboxd.Cache, query string) {
 	people, err := letterboxd.SearchPeople(c, query, 10)
 	if err != nil {
 		alfred.OutputErrorf("Failed to search people: %v", err)
