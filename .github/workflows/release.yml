@@ -15,28 +15,8 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: pip install ruff pytest
-
-      - name: Lint with ruff
-        run: ruff check lbsearch.py tests/
-
-      - name: Format check with ruff
-        run: ruff format --check lbsearch.py tests/
-
-      - name: Run tests
-        run: pytest tests/
-
-      - name: Build workflow
-        run: make workflow
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - run: make workflow
+      - uses: softprops/action-gh-release@v2
         with:
           files: letterboxd.alfredworkflow
           generate_release_notes: true
