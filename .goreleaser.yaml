@@ -1,0 +1,15 @@
+version: 2
+
+builds:
+  - skip: true
+
+release:
+  name_template: "{{.Version}}"
+  extra_files:
+    - glob: ./letterboxd.alfredworkflow
+  draft: false
+  prerelease: auto
+
+changelog:
+  use: github-native
+  sort: asc
