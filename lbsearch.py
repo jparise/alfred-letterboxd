@@ -22,6 +22,10 @@ class AlfredIcon(TypedDict):
     path: str
 
 
+class AlfredText(TypedDict, total=False):
+    largetype: str
+
+
 class AlfredItem(TypedDict, total=False):
     uid: str
     title: str
@@ -30,6 +34,7 @@ class AlfredItem(TypedDict, total=False):
     arg: str
     autocomplete: str
     icon: AlfredIcon
+    text: AlfredText
 
 
 class AsAlfredItem(Protocol):
@@ -55,6 +60,7 @@ class Film(AsAlfredItem):
             arg=self.url,
             autocomplete=self.title,
             icon=AlfredIcon(path="icon.png"),
+            text=AlfredText(largetype=self.title),
             valid=True,
         )
 
@@ -80,6 +86,7 @@ class Person(AsAlfredItem):
             arg=self.url,
             autocomplete=self.name,
             icon=AlfredIcon(path="icon.png"),
+            text=AlfredText(largetype=self.name),
             valid=True,
         )
 
