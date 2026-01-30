@@ -1,6 +1,8 @@
 # Alfred Letterboxd Workflow
 
-Search [Letterboxd](https://letterboxd.com) for films and people directly from Alfred.
+Search [Letterboxd](https://letterboxd.com) for films and people directly from [Alfred](https://www.alfredapp.com/).
+
+![screenshot.png](screenshot.png)
 
 ## Installation
 
@@ -10,7 +12,7 @@ Download the latest `letterboxd.alfredworkflow` file from the [Releases](https:/
 
 ### Film Search
 
-Type `lb` followed by your search query:
+Type `lb` followed by your search query to search films:
 
 ```
 lb raiders of the lost ark
@@ -20,7 +22,7 @@ lb everything everywhere
 
 ### People Search
 
-Type `lbp` followed by the person's name:
+Type `lbp` followed by the person's name to search cast and crew:
 
 ```
 lbp harrison ford
@@ -28,14 +30,11 @@ lbp greta gerwig
 lbp steven spielberg
 ```
 
-Press **Enter** to open the result in your browser.
-
 ## Requirements
 
-**Runtime:**
-- Python 3.9+ (included with macOS Monterey and later)
+- [Alfred Powerpack](https://www.alfredapp.com/powerpack/)
+- Python 3.9+ (included with macOS Ventura and later)
 
-**Checking your Python version:**
 ```sh
 python3 --version  # Should show 3.9 or higher
 ```
@@ -47,8 +46,8 @@ python3 --version  # Should show 3.9 or higher
 ```sh
 make workflow       # Build Alfred workflow
 make install        # Build and install in Alfred
-make test           # Run pytest tests and integration tests
-make lint           # Lint code with ruff
+make test           # Run tests
+make lint           # Lint code
 ```
 
 ## License

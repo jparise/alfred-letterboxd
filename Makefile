@@ -34,7 +34,7 @@ workflow: clean ## Build the Alfred workflow package
 	@echo "Creating $(WORKFLOW_NAME) version $(VERSION)..."
 	@plutil -replace version -string "$(VERSION)" info.plist
 	@sed -i '' 's/__version__ = ".*"/__version__ = "$(VERSION)"/' $(SCRIPT_NAME)
-	@zip $(WORKFLOW_NAME) info.plist icon.png $(SCRIPT_NAME) > /dev/null
+	@zip $(WORKFLOW_NAME) info.plist icon.png screenshot.png $(SCRIPT_NAME) > /dev/null
 	@plutil -replace version -string "0.0.0" info.plist
 	@sed -i '' 's/__version__ = ".*"/__version__ = "0.0.0"/' $(SCRIPT_NAME)
 	@echo "Done! Workflow: $(WORKFLOW_NAME)"
