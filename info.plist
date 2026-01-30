@@ -164,12 +164,10 @@
 		</dict>
 	</array>
 	<key>readme</key>
-	<string># Letterboxd Search
+	<string>## Usage
 
 Search [Letterboxd](https://www.letterboxd.com/) for films and people.
 ![screenshot.png](screenshot.png)
-
-## Usage
 
 Search for films: `lb [query]`
 
