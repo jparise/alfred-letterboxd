@@ -135,6 +135,7 @@ def test_film_as_alfred_item():
     assert item.get("title") == "The Matrix (1999)"
     assert item.get("subtitle") == "Director: Wachowskis"
     assert item.get("arg") == "https://letterboxd.com/film/the-matrix/"
+    assert item.get("text", {}).get("largetype") == "The Matrix"
     assert item.get("valid") is True
 
 
@@ -151,6 +152,7 @@ def test_person_as_alfred_item():
     assert item.get("title") == "Keanu Reeves"
     assert "Actor" in (item.get("subtitle") or "")
     assert "The Matrix" in (item.get("subtitle") or "")
+    assert item.get("text", {}).get("largetype") == "Keanu Reeves"
     assert item.get("valid") is True
 
 
