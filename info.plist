@@ -65,13 +65,13 @@
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
-				<true/>
+				<false/>
 				<key>queuedelaymode</key>
 				<integer>1</integer>
 				<key>queuemode</key>
-				<integer>1</integer>
+				<integer>2</integer>
 				<key>runningsubtext</key>
-				<string>Searching Letterboxd...</string>
+				<string>Searching Letterboxd for '{query}'...</string>
 				<key>script</key>
 				<string>python3 lbsearch.py films "$1"</string>
 				<key>scriptargtype</key>
@@ -116,11 +116,11 @@
 				<key>queuedelayimmediatelyinitially</key>
 				<false/>
 				<key>queuedelaymode</key>
-				<integer>0</integer>
+				<integer>1</integer>
 				<key>queuemode</key>
 				<integer>2</integer>
 				<key>runningsubtext</key>
-				<string>Searching Letterboxd...</string>
+				<string>Searching Letterboxd for '{query}'...</string>
 				<key>script</key>
 				<string>python3 lbsearch.py people "$1"</string>
 				<key>scriptargtype</key>
