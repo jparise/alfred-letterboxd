@@ -30,6 +30,12 @@ lbp greta gerwig
 lbp steven spielberg
 ```
 
+### Configuration
+
+In the workflow's configuration, you can customize the search keywords. This is
+useful if you have keyword conflicts with other workflows or prefer different
+keywords.
+
 ## Requirements
 
 - [Alfred Powerpack](https://www.alfredapp.com/powerpack/)
