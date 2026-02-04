@@ -45,6 +45,15 @@ keywords.
 python3 --version  # Should show 3.9 or higher
 ```
 
+## Custom Web Search
+
+Alternatively, you can get a simpler (less integrated) Letterboxd search experience without
+installing a full workflow using a [Custom Web Search](https://www.alfredapp.com/help/features/web-search/#custom):
+
+[`alfred://customsearch/Search%20Letterboxd%20for%20'%7Bquery%7D'/letterboxd/utf8/nospace/https://letterboxd.com/search/?q=%7Bquery%7D`][cws]
+
+[cws]: alfred://customsearch/Search%20Letterboxd%20for%20'%7Bquery%7D'/letterboxd/utf8/nospace/https://letterboxd.com/search/?q=%7Bquery%7D
+
 ## Development
 
 ### Building
