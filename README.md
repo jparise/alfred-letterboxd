@@ -6,7 +6,7 @@ Search [Letterboxd](https://letterboxd.com) for films and people directly from [
 
 ## Installation
 
-Download the latest `letterboxd.alfredworkflow` file from the [Releases](https://github.com/jparise/alfred-letterboxd/releases) page and double-click to install.
+Download the latest `letterboxd.alfredworkflow` file from the [Releases](https://github.com/jparise/alfred-letterboxd/releases/latest) page and double-click to install.
 
 ## Usage
 
