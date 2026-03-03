@@ -6,16 +6,16 @@ Search [Letterboxd](https://letterboxd.com) for films and people directly from [
 
 ## Usage
 
-Search for films using the `lb` keyword:
+Search for films using the `lb` keyword.
 
 ![Film Search](images/lb.png)
 
-Search for people using the `lbp` keyword:
-
-![People Search](images/lbp.png)
-
 * <kbd>↩</kbd> Open the result page in your default browser.
 * <kbd>⌘</kbd><kbd>Y</kbd> Quick Look the result page.
+
+Search for people using the `lbp` keyword.
+
+![People Search](images/lbp.png)
 
 ### Configuration
 
