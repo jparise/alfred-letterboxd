@@ -8,29 +8,16 @@ Download the latest `letterboxd.alfredworkflow` file from the [Releases](https:/
 
 ## Usage
 
-### Film Search
+Search for films using the `lb` keyword:
 
-Type `lb` followed by your search query to search films:
+![Film Search](images/lb.png)
 
-```
-lb raiders of the lost ark
-lb parasite 2019
-lb everything everywhere
-```
+Search for people using the `lbp` keyword:
 
-![lb.png](lb.png)
+![People Search](images/lbp.png)
 
-### People Search
-
-Type `lbp` followed by the person's name to search cast and crew:
-
-```
-lbp harrison ford
-lbp greta gerwig
-lbp steven spielberg
-```
-
-![lbp.png](lbp.png)
+* <kbd>↩</kbd> Open the result page in your default browser.
+* <kbd>⌘</kbd><kbd>Y</kbd> Quick Look the result page.
 
 ### Configuration
 

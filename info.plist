@@ -166,17 +166,16 @@
 	<key>readme</key>
 	<string>## Usage
 
-Search [Letterboxd](https://www.letterboxd.com/) for films and people.
+Search [Letterboxd](https://www.letterboxd.com/) for films via the `lb` keyword:
 
-Search for films: `lb [query]`
+![Film Search](images/lb.png)
 
-![lb.png](lb.png)
+You can also search for people via the `lbp` keyword:
 
-Search for people: `lbp [query]`
+![People Search](images/lbp.png)
 
-![lbp.png](lbp.png)
-
-Press **Enter** to open the result in your browser.</string>
+* &lt;kbd&gt;↩&lt;/kbd&gt; Open the result page in your default browser.
+* &lt;kbd&gt;⌘&lt;/kbd&gt;&lt;kbd&gt;Y&lt;/kbd&gt; Quick Look the result page.</string>
 	<key>uidata</key>
 	<dict>
 		<key>A1B2C3D4-5E6F-7890-ABCD-EF1234567890</key>
