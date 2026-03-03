@@ -2,8 +2,6 @@
 
 Search [Letterboxd](https://letterboxd.com) for films and people directly from [Alfred](https://www.alfredapp.com/).
 
-![screenshot.png](screenshot.png)
-
 ## Installation
 
 Download the latest `letterboxd.alfredworkflow` file from the [Releases](https://github.com/jparise/alfred-letterboxd/releases/latest) page and double-click to install.
@@ -20,6 +18,8 @@ lb parasite 2019
 lb everything everywhere
 ```
 
+![lb.png](lb.png)
+
 ### People Search
 
 Type `lbp` followed by the person's name to search cast and crew:
@@ -29,6 +29,8 @@ lbp harrison ford
 lbp greta gerwig
 lbp steven spielberg
 ```
+
+![lbp.png](lbp.png)
 
 ### Configuration
 

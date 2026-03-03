@@ -167,11 +167,14 @@
 	<string>## Usage
 
 Search [Letterboxd](https://www.letterboxd.com/) for films and people.
-![screenshot.png](screenshot.png)
 
 Search for films: `lb [query]`
 
+![lb.png](lb.png)
+
 Search for people: `lbp [query]`
+
+![lbp.png](lbp.png)
 
 Press **Enter** to open the result in your browser.</string>
 	<key>uidata</key>
