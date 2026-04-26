@@ -6,6 +6,8 @@ from datetime import timedelta
 from pathlib import Path
 from unittest.mock import Mock
 
+import pytest
+
 # Import the module under test
 sys.path.insert(0, str(Path(__file__).parent.parent))
 import lbsearch
@@ -74,16 +76,29 @@ class TestCache:
 class TestFilmParser:
     """Test film HTML parsing"""
 
-    def test_parse_film(self):
-        """Test parsing a film search result"""
-        html = """
+    @pytest.mark.parametrize(
+        "director_html, expected",
+        [
+            ('<a href="/director/wachowskis/" class="text-slug">Wachowskis</a>', "Wachowskis"),
+            ('<a href="/director/wachowskis/">Wachowskis</a>', "Wachowskis"),
+            ('<a href="/director/wachowskis/" class="other">Wachowskis</a>', "Wachowskis"),
+            (
+                '<a href="/director/a/">A</a><a href="/director/b/">B</a>',
+                "A, B",
+            ),
+            ("", ""),
+        ],
+    )
+    def test_parse_film(self, director_html, expected):
+        """Test parsing a film search result with various director link forms"""
+        html = f"""
         <li class="search-result">
             <div class="react-component"
                  data-item-slug="the-matrix"
                  data-item-name="The Matrix (1999)"
                  data-item-link="/film/the-matrix/">
             </div>
-            <a href="/director/wachowskis/" class="text-slug">Wachowskis</a>
+            {director_html}
         </li>
         """
         parser = LetterboxdFilmParser()
@@ -95,6 +110,7 @@ class TestFilmParser:
         assert film.year == "1999"
         assert film.letterboxd_id == "the-matrix"
         assert "letterboxd.com/film/the-matrix" in film.url
+        assert film.director == expected
 
 
 class TestPeopleParser:

@@ -154,11 +154,9 @@ class LetterboxdFilmParser(LetterboxdParser):
                 elif name:
                     self.current_film.title = name
 
-        # Track director links - look for text-slug class
         if self.in_result and tag == "a":
             href = attrs_dict.get("href") or ""
-            classes = attrs_dict.get("class") or ""
-            if "/director/" in href and "text-slug" in classes:
+            if "/director/" in href:
                 self.in_director_link = True
 
     def handle_endtag(self, tag):
