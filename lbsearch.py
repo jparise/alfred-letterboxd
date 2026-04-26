@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Letterboxd search tool for Alfred"""
 
+from __future__ import annotations
+
 import argparse
 import hashlib
 import json
@@ -9,11 +11,12 @@ import tempfile
 import urllib.parse
 import urllib.request
 from abc import abstractmethod
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import NamedTuple, Optional, Protocol, Sequence, Type, TypedDict, Union
+from typing import NamedTuple, Protocol, TypedDict
 
 __version__ = "0.0.0"
 
@@ -103,7 +106,7 @@ class LetterboxdFilmParser(LetterboxdParser):
     """HTML parser for Letterboxd film search results"""
 
     films: list[Film]
-    current_film: Optional[Film]
+    current_film: Film | None
     directors: list[str]
 
     def __init__(self):
@@ -175,7 +178,7 @@ class LetterboxdPeopleParser(LetterboxdParser):
     """HTML parser for Letterboxd people search results"""
 
     people: list[Person]
-    current_person: Optional[Person]
+    current_person: Person | None
 
     def __init__(self):
         super().__init__()
@@ -245,7 +248,7 @@ class LetterboxdPeopleParser(LetterboxdParser):
 class Cache:
     """File-based cache with TTL management"""
 
-    def __init__(self, ttl: timedelta, path: Union[Path, str, None] = None):
+    def __init__(self, ttl: timedelta, path: Path | str | None = None):
         self.dir = Path(
             path
             or os.getenv("alfred_workflow_cache")
@@ -265,7 +268,7 @@ class Cache:
         mtime = datetime.fromtimestamp(filepath.stat().st_mtime)
         return datetime.now() - mtime > self.ttl
 
-    def get(self, key: str) -> Optional[list[AlfredItem]]:
+    def get(self, key: str) -> list[AlfredItem] | None:
         path = self._key_to_filename(key)
         try:
             if self._is_expired(path):
@@ -336,7 +339,7 @@ def search(
     query: str,
     parser: LetterboxdParser,
     limit: int = 10,
-    cache: Optional[Cache] = None,
+    cache: Cache | None = None,
 ):
     cache_key = f"{typ}:{query}:{limit}"
     if cache is not None:
@@ -365,7 +368,7 @@ def search(
 
 class SearchSpec(NamedTuple):
     url_pattern: str
-    parser: Type[LetterboxdParser]
+    parser: type[LetterboxdParser]
 
 
 SEARCH_SPECS: dict[str, SearchSpec] = {
