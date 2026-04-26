@@ -341,7 +341,7 @@ def search(
     limit: int = 10,
     cache: Cache | None = None,
 ):
-    cache_key = f"{typ}:{query}:{limit}"
+    cache_key = f"{typ}:{query}:{limit}:{__version__}"
     if cache is not None:
         if cached := cache.get(cache_key):
             alfred_output(cached)
