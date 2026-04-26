@@ -52,6 +52,12 @@ make test           # Run tests
 make lint           # Lint code
 ```
 
+### Alfred Gallery
+
+Updates are submitted to the [Alfred Gallery Edits](https://github.com/alfredapp/gallery-edits)
+repository using the [Update Existing Workflow](https://github.com/alfredapp/gallery-edits/issues/new?template=02_update_workflow.yml)
+issue template.
+
 ## License
 
 This software is released under the terms of the [MIT License](LICENSE).
