@@ -281,8 +281,11 @@ class Cache:
 
     def set(self, key: str, items: list[AlfredItem]):
         path = self._key_to_filename(key)
-        with open(path, "w") as f:
-            json.dump(items, f)
+        try:
+            with open(path, "w") as f:
+                json.dump(items, f)
+        except OSError:
+            pass
 
     def prune(self):
         """Remove expired cache entries"""
