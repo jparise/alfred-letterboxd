@@ -264,7 +264,7 @@ class Cache:
         return f"Cache(dir='{self.dir}', ttl={self.ttl})"
 
     def _key_to_filename(self, key: str) -> Path:
-        hash_obj = hashlib.md5(key.encode())
+        hash_obj = hashlib.md5(key.encode(), usedforsecurity=False)
         return self.dir / f"{hash_obj.hexdigest()}.json"
 
     def _is_expired(self, filepath: Path) -> bool:
