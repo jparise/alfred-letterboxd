@@ -166,6 +166,39 @@ def test_alfred_output(capsys):
     assert len(data["items"]) == 1
 
 
+def test_search_no_results(capsys):
+    """Zero results with no search-result <li> reports 'No results found'"""
+    client = Mock()
+    client.search.return_value = "<html><body>nothing here</body></html>"
+
+    lbsearch.search(client, "films", "http://test/{}/", "query", LetterboxdFilmParser())
+
+    captured = capsys.readouterr()
+    data = json.loads(captured.out)
+    assert data["items"][0]["title"] == "No results found"
+
+
+def test_search_format_changed(capsys):
+    """search-result <li> present but no parsed items signals a format change"""
+    # The <li> has the search-result class so saw_result_container is set,
+    # but the inner data-item-slug is missing so no Film is produced.
+    html = '<li class="search-result"><div class="react-component"></div></li>'
+    client = Mock()
+    client.search.return_value = html
+
+    lbsearch.search(client, "films", "http://test/{}/", "query", LetterboxdFilmParser())
+
+    captured = capsys.readouterr()
+    data = json.loads(captured.out)
+    item = data["items"][0]
+    assert item["title"] == "Unable to read Letterboxd search results"
+    assert "format has changed" in item["subtitle"]
+    assert item["arg"].startswith("https://github.com/jparise/alfred-letterboxd/issues/new?")
+    assert "template=search-format.yml" in item["arg"]
+    assert "type=films" in item["arg"]
+    assert item["valid"] is True
+
+
 def test_search_parsing_error(capsys):
     """Test that parsing errors are reported to the user"""
     client = Mock()
