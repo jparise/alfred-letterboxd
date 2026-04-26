@@ -95,6 +95,8 @@ class Person(AsAlfredItem):
 
 
 class LetterboxdParser(HTMLParser):
+    saw_result_container: bool = False
+
     @property
     @abstractmethod
     def results(self) -> Sequence[AsAlfredItem]:
@@ -127,6 +129,7 @@ class LetterboxdFilmParser(LetterboxdParser):
         # Check if we're entering a search result
         if tag == "li" and "search-result" in (attrs_dict.get("class") or ""):
             self.in_result = True
+            self.saw_result_container = True
             self.current_film = Film(title="", year="", director="", url="", letterboxd_id="")
             self.directors = []
 
@@ -198,6 +201,7 @@ class LetterboxdPeopleParser(LetterboxdParser):
         # Check if we're entering a search result - extract role from class
         if tag == "li" and "search-result" in (attrs_dict.get("class") or ""):
             self.in_result = True
+            self.saw_result_container = True
             classes = attrs_dict.get("class") or ""
             # Extract role from class like "-actor", "-director"
             role = ""
@@ -335,6 +339,10 @@ def alfred_message(title: str, subtitle: str):
     alfred_output([{"title": title, "subtitle": subtitle, "valid": False}])
 
 
+def alfred_action_item(title: str, subtitle: str, url: str):
+    alfred_output([{"title": title, "subtitle": subtitle, "arg": url, "valid": True}])
+
+
 def search(
     client: LetterboxdClient,
     typ: str,
@@ -360,7 +368,24 @@ def search(
 
     items = [f.as_alfred_item() for f in parser.results[:limit]]
     if not items:
-        alfred_message("No results found", f'No {typ} results for "{query}"')
+        if parser.saw_result_container:
+            issue_url = (
+                "https://github.com/jparise/alfred-letterboxd/issues/new?"
+                + urllib.parse.urlencode(
+                    {
+                        "template": "search-format.yml",
+                        "version": __version__,
+                        "type": typ,
+                    }
+                )
+            )
+            alfred_action_item(
+                "Unable to read Letterboxd search results",
+                "The search response format has changed. Press ↩ to report this.",
+                issue_url,
+            )
+        else:
+            alfred_message("No results found", f'No {typ} results for "{query}"')
         return
 
     if cache is not None:
