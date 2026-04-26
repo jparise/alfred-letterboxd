@@ -82,8 +82,11 @@ class Person(AsAlfredItem):
         if self.known_for:
             parts.append(", ".join(self.known_for))
 
+        # Extract the slug from URLs like ".../actor/keanu-reeves/".
+        slug = self.url.rstrip("/").rsplit("/", 1)[-1] or self.name
+
         return AlfredItem(
-            uid=f"letterboxd-person-{self.name}",
+            uid=f"letterboxd-person-{slug}",
             title=self.name,
             subtitle=" • ".join(parts),
             arg=self.url,

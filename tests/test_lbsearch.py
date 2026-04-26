@@ -148,12 +148,19 @@ def test_person_as_alfred_item():
     )
     item = person.as_alfred_item()
 
-    assert item.get("uid") == "letterboxd-person-Keanu Reeves"
+    assert item.get("uid") == "letterboxd-person-keanu-reeves"
     assert item.get("title") == "Keanu Reeves"
     assert "Actor" in (item.get("subtitle") or "")
     assert "The Matrix" in (item.get("subtitle") or "")
     assert item.get("text", {}).get("largetype") == "Keanu Reeves"
     assert item.get("valid") is True
+
+
+def test_person_uid_fallback():
+    """When url is empty, uid falls back to the person's name"""
+    person = Person(name="Keanu Reeves", role="actor", known_for=[], url="")
+    item = person.as_alfred_item()
+    assert item.get("uid") == "letterboxd-person-Keanu Reeves"
 
 
 def test_alfred_output(capsys):
