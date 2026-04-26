@@ -10,7 +10,6 @@ import os
 import tempfile
 import urllib.parse
 import urllib.request
-from abc import abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -101,10 +100,9 @@ class LetterboxdParser(HTMLParser):
     saw_result_container: bool = False
 
     @property
-    @abstractmethod
     def results(self) -> Sequence[AsAlfredItem]:
         """Return parsed results"""
-        ...
+        raise NotImplementedError
 
 
 class LetterboxdFilmParser(LetterboxdParser):
