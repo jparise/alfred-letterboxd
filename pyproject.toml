@@ -41,7 +41,7 @@ branch = true
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "RUF", "W"]
+select = ["E", "F", "I", "RUF", "UP", "W"]
 
 [tool.ruff.format]
 quote-style = "double"
