@@ -28,7 +28,7 @@ dev = [
     "pytest==8.4.2",
     "pytest-cov==7.1.0",
     "ruff==0.15.4",
-    "ty==0.0.12",
+    "ty==0.0.39",
 ]
 
 [tool.setuptools.dynamic]
