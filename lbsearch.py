@@ -5,9 +5,12 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import json
 import os
 import tempfile
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from collections.abc import Sequence
@@ -305,24 +308,45 @@ class Cache:
 class LetterboxdClient:
     """HTTP client for Letterboxd searches"""
 
+    RETRYABLE_STATUSES = frozenset({403, 408, 429, 500, 502, 503, 504})
+    RETRY_DELAY = 0.5
+
     def __init__(self, timeout: float = 5):
+        # Send a consistent Chrome-like fingerprint.
         self.headers = {
-            "User-Agent": f"Alfred Letterboxd Workflow/{__version__}",
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0.0.0 Safari/537.36"
+            ),
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.9",
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache",
+            "Upgrade-Insecure-Requests": "1",
             "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": '"macOS"',
             "sec-fetch-dest": "document",
             "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "none",
+            "sec-fetch-user": "?1",
         }
         self.timeout = timeout
 
-    def search(self, format_url: str, query: str) -> str:
+    def search(self, format_url: str, query: str, attempts: int = 2) -> str:
         url = format_url.format(urllib.parse.quote_plus(query.lower()))
-        req = urllib.request.Request(url, headers=self.headers)
-        with urllib.request.urlopen(req, timeout=self.timeout) as response:
-            return response.read().decode("utf-8")
+        for remaining in reversed(range(max(1, attempts))):
+            req = urllib.request.Request(url, headers=self.headers)
+            try:
+                with urllib.request.urlopen(req, timeout=self.timeout) as r:
+                    return r.read().decode("utf-8")
+            except urllib.error.HTTPError as e:
+                if not remaining or e.code not in self.RETRYABLE_STATUSES:
+                    raise
+            except (http.client.HTTPException, urllib.error.URLError):
+                if not remaining:
+                    raise
+            time.sleep(self.RETRY_DELAY)
+        raise RuntimeError("unreachable")
 
 
 def alfred_output(items: list[AlfredItem]):
@@ -357,7 +381,19 @@ def search(
             alfred_output(cached)
             return
 
-    html = client.search(url_pattern, query)
+    try:
+        html = client.search(url_pattern, query)
+    except http.client.HTTPException as e:
+        alfred_error(f"Network error: {type(e).__name__}")
+        return
+    except urllib.error.HTTPError as e:
+        alfred_error(f"Letterboxd returned HTTP {e.code}")
+        return
+    except urllib.error.URLError as e:
+        # e.reason can be an OSError/SSLError with a multi-line str.
+        reason = str(e.reason).splitlines()[0] if e.reason else "unknown"
+        alfred_error(f"Network error: {reason}")
+        return
 
     try:
         parser.feed(html)
