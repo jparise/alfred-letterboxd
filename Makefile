@@ -17,8 +17,9 @@ clean: ## Remove built files
 
 lint: ## Lint code with ruff
 	@echo "Linting code..."
-	@ruff format --check $(SCRIPT_NAME) tests/
-	@ruff check $(SCRIPT_NAME) tests/
+	@ruff format --check --quiet $(SCRIPT_NAME) tests/
+	@ruff check --quiet $(SCRIPT_NAME) tests/
+	@ty check --quiet $(SCRIPT_NAME) tests/
 	@echo "✓ Linting passed"
 
 test: ## Run unit and integration tests
