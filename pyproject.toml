@@ -27,7 +27,7 @@ Issues = "https://github.com/jparise/alfred-letterboxd/issues"
 dev = [
     "pytest==8.4.2",
     "pytest-cov==7.1.0",
-    "ruff==0.15.4",
+    "ruff==0.16.0",
     "ty==0.0.39",
 ]
 
