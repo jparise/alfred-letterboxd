@@ -17,9 +17,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - run: make workflow
-      - uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
-        with:
-          files: letterboxd.alfredworkflow
-          generate_release_notes: true
-          draft: false
-          prerelease: false
+      - name: Create release
+        run: gh release create "$GITHUB_REF_NAME" letterboxd.alfredworkflow --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
