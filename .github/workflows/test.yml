@@ -39,10 +39,14 @@ jobs:
           ty check --python "$(which python)" --output-format=github
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.9', '3.14']
+        include:
+          - python-version: '3.9'
+            os: ubuntu-24.04  # ubuntu-latest (26.04+) doesn't have Python 3.9
+          - python-version: '3.14'
+            os: ubuntu-latest
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
