@@ -465,10 +465,7 @@ def main():
         except Exception:
             cache = None
 
-    spec = SEARCH_SPECS.get(args.type)
-    if not spec:
-        alfred_error(f"Unsupported search type: {args.type}")
-        return
+    spec = SEARCH_SPECS[args.type]
 
     try:
         search(
