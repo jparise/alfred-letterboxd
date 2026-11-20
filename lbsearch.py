@@ -376,7 +376,7 @@ def search(
     limit: int = 10,
     cache: Cache | None = None,
 ):
-    cache_key = f"{typ}:{query}:{limit}:{__version__}"
+    cache_key = f"{typ}:{query.lower()}:{limit}:{__version__}"
     if cache is not None:
         if cached := cache.get(cache_key):
             alfred_output(cached)
@@ -458,8 +458,9 @@ def main():
     parser.add_argument("query", help="Search query")
 
     args = parser.parse_args()
+    query = " ".join(args.query.split())
 
-    if not args.query:
+    if not query:
         alfred_output([])
         return
 
@@ -482,7 +483,7 @@ def main():
             client,
             args.type,
             spec.url_pattern,
-            args.query,
+            query,
             spec.parser(),
             cache=cache,
         )
