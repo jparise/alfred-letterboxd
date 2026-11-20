@@ -253,6 +253,23 @@ class TestPeopleParser:
         assert "letterboxd.com/actor/keanu-reeves" in person.url
         assert "The Matrix" in person.known_for
 
+    @pytest.mark.parametrize(
+        "classes, expected",
+        [
+            ("search-result -contributor -actor", "actor"),
+            ("search-result -contributor -studio", "studio"),
+            ("search-result -contributor -cinematography", "cinematography"),
+            ("search-result -contributor", ""),
+            ("search-result", ""),
+        ],
+    )
+    def test_parse_role(self, classes, expected):
+        """The role comes from the result's modifier class"""
+        html = f'<li class="{classes}"><h2><a href="/x/y/">Name</a></h2></li>'
+        parser = LetterboxdPeopleParser()
+        parser.feed(html)
+        assert parser.people[0].role == expected
+
 
 def test_film_as_alfred_item():
     film = Film(

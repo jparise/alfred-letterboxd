@@ -205,17 +205,9 @@ class LetterboxdPeopleParser(LetterboxdParser):
         if tag == "li" and "search-result" in (attrs_dict.get("class") or ""):
             self.in_result = True
             self.saw_result_container = True
-            classes = attrs_dict.get("class") or ""
-            # Extract role from class like "-actor", "-director"
-            role = ""
-            if "-actor" in classes:
-                role = "actor"
-            elif "-director" in classes:
-                role = "director"
-            elif "-producer" in classes:
-                role = "producer"
-            elif "-writer" in classes:
-                role = "writer"
+            classes = (attrs_dict.get("class") or "").split()
+            # Role is the modifier class after "-contributor", like "-actor" or "-studio".
+            role = next((c[1:] for c in classes if c.startswith("-") and c != "-contributor"), "")
             self.current_person = Person(name="", role=role, known_for=[], url="")
 
         # Track name link in h2
