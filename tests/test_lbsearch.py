@@ -374,3 +374,34 @@ def test_search_parsing_error(client, outputs):
             }
         ]
     ]
+
+
+def test_search_cache_ignores_case(client, outputs, tmp_path):
+    """Queries differing only in case share a cache entry"""
+    client.search.return_value = (
+        '<li class="search-result"><div class="react-component"'
+        ' data-item-slug="alien" data-item-name="Alien (1979)"></div></li>'
+    )
+    cache = Cache(timedelta(minutes=15), path=tmp_path)
+    for query in ("Alien", "alien"):
+        lbsearch.search(
+            client, "films", "http://test/{}/", query, LetterboxdFilmParser(), cache=cache
+        )
+    assert client.search.call_count == 1
+    assert outputs[0] == outputs[1]
+
+
+@pytest.mark.parametrize(
+    "arg, expected",
+    [("  alien   romulus ", "alien romulus"), ("   ", None)],
+)
+def test_main_normalizes_query_whitespace(monkeypatch, outputs, arg, expected):
+    """Surrounding and repeated whitespace is collapsed before searching"""
+    calls = []
+    monkeypatch.setattr(lbsearch, "search", lambda *args, **kw: calls.append(args[3]))
+    monkeypatch.setattr(sys, "argv", ["lbsearch.py", "--no-cache", "films", arg])
+    lbsearch.main()
+    if expected is None:
+        assert calls == [] and outputs == [[]]
+    else:
+        assert calls == [expected]
