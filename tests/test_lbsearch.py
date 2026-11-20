@@ -1,6 +1,7 @@
 import http.client
 import json
 import os
+import socket
 import sys
 import time
 import urllib.error
@@ -152,6 +153,18 @@ class TestClientRetry:
     def test_http_exception_is_retried(self, urlopen):
         """http.client exceptions (e.g. IncompleteRead) are retried"""
         urlopen.side_effect = [http.client.IncompleteRead(b"partial"), respond_with(b"ok")]
+        client = LetterboxdClient()
+        assert client.search("http://x/{}/", "q") == "ok"
+        assert urlopen.call_count == 2
+
+    def test_read_timeout_is_retried(self, urlopen):
+        """A timeout while reading the response body is retried"""
+
+        @contextmanager
+        def timeout_on_read():
+            yield SimpleNamespace(read=Mock(side_effect=socket.timeout("timed out")))
+
+        urlopen.side_effect = [timeout_on_read(), respond_with(b"ok")]
         client = LetterboxdClient()
         assert client.search("http://x/{}/", "q") == "ok"
         assert urlopen.call_count == 2
@@ -355,6 +368,13 @@ def test_search_http_exception(client, outputs):
     assert outputs == [
         [{"title": "Error", "subtitle": "Network error: IncompleteRead", "valid": False}]
     ]
+
+
+def test_search_timeout(client, outputs):
+    """Timeouts are reported as network errors"""
+    client.search.side_effect = socket.timeout("timed out")
+    lbsearch.search(client, "films", "http://test/{}/", "query", LetterboxdFilmParser())
+    assert outputs == [[{"title": "Error", "subtitle": "Network error: timed out", "valid": False}]]
 
 
 def test_search_parsing_error(client, outputs):

@@ -8,6 +8,7 @@ import hashlib
 import http.client
 import json
 import os
+import socket
 import tempfile
 import time
 import urllib.error
@@ -342,7 +343,7 @@ class LetterboxdClient:
             except urllib.error.HTTPError as e:
                 if not remaining or e.code not in self.RETRYABLE_STATUSES:
                     raise
-            except (http.client.HTTPException, urllib.error.URLError):
+            except (http.client.HTTPException, urllib.error.URLError, socket.timeout):
                 if not remaining:
                     raise
             time.sleep(self.RETRY_DELAY)
@@ -388,6 +389,9 @@ def search(
         return
     except urllib.error.HTTPError as e:
         alfred_error(f"Letterboxd returned HTTP {e.code}")
+        return
+    except socket.timeout:
+        alfred_error("Network error: timed out")
         return
     except urllib.error.URLError as e:
         # e.reason can be an OSError/SSLError with a multi-line str.
