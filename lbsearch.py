@@ -147,24 +147,22 @@ class LetterboxdFilmParser(LetterboxdParser):
             if slug and self.current_film:
                 self.current_film.letterboxd_id = slug
                 self.current_film.url = f"https://letterboxd.com{link}"
-
-                # Parse title and year from "Title (YEAR)"
-                if name and " (" in name:
-                    idx = name.rfind(" (")
-                    self.current_film.title = name[:idx]
-                    self.current_film.year = name[idx + 2 : -1]
-                elif name:
-                    self.current_film.title = name
+                self.current_film.title = name
 
         if self.in_result and tag == "a":
             href = attrs_dict.get("href") or ""
             if "/director/" in href:
                 self.in_director_link = True
+            elif href.startswith("/films/year/") and self.current_film:
+                self.current_film.year = href.removeprefix("/films/year/").strip("/")
 
     def handle_endtag(self, tag):
         if tag == "li" and self.in_result:
             # Finalize current film
             if self.current_film and self.current_film.title:
+                # A film with a year link is named "Title (YEAR)".
+                if year := self.current_film.year:
+                    self.current_film.title = self.current_film.title.removesuffix(f" ({year})")
                 self.current_film.director = ", ".join(self.directors)
                 self.films.append(self.current_film)
             self.in_result = False

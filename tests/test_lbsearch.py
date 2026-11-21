@@ -215,6 +215,7 @@ class TestFilmParser:
                  data-item-name="The Matrix (1999)"
                  data-item-link="/film/the-matrix/">
             </div>
+            <a href="/films/year/1999/">1999</a>
             {director_html}
         </li>
         """
@@ -228,6 +229,31 @@ class TestFilmParser:
         assert film.letterboxd_id == "the-matrix"
         assert "letterboxd.com/film/the-matrix" in film.url
         assert film.director == expected
+
+    @pytest.mark.parametrize(
+        "name, year_link, title, year",
+        [
+            ("Alien (1979)", "/films/year/1979/", "Alien", "1979"),
+            (
+                "Birdman or (The Unexpected Virtue of Ignorance) (2014)",
+                "/films/year/2014/",
+                "Birdman or (The Unexpected Virtue of Ignorance)",
+                "2014",
+            ),
+            ("Remake (1984)", None, "Remake (1984)", ""),
+            ("Alien", None, "Alien", ""),
+        ],
+    )
+    def test_parse_title_and_year(self, name, year_link, title, year):
+        """The year comes from the year link and is removed from the end of the name"""
+        link_html = f'<a href="{year_link}">{year}</a>' if year_link else ""
+        html = (
+            f'<li class="search-result"><div class="react-component"'
+            f' data-item-slug="x" data-item-name="{name}"></div>{link_html}</li>'
+        )
+        parser = LetterboxdFilmParser()
+        parser.feed(html)
+        assert (parser.films[0].title, parser.films[0].year) == (title, year)
 
 
 class TestPeopleParser:
